@@ -10,11 +10,11 @@ from collections import Counter
 可改进点：使用redis存储队列和虑重
 """
 async def get_region():
-    browser = await launch({'headless': True, 'args': ['--no-sandbox']})
+    browser = await launch({'headless': False, 'args': ['--no-sandbox']})
     page = await browser.newPage()
     page.setDefaultNavigationTimeout(30000000)
     await page.setUserAgent(get_random_user_agent())
-    fp = open('areas.txt', 'w+')
+    fp = open('areas.txt', 'w+', encoding='utf-8')
     handled = {}
     urls = ['http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2019/index.html']
     while urls:
@@ -29,6 +29,7 @@ async def get_region():
                 href = await (await item.getProperty('href')).jsonValue()
                 fp.write(href + "\t" + text + "\n")
                 if Counter(href)['/'] <= 8:
+                    href = str(href)
                     urls.append(href)
             print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), text, href, len(items))
             time.sleep(random.randint(2, 5))
